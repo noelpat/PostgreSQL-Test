@@ -64,7 +64,9 @@ def get_query(selection=[]):
 				#else:
 				#	print("Non integer input found!", i)
 		
-		return json.dumps(output), 200, {'ContentType':'application/json'}
+			return json.dumps(output), 200, {'ContentType':'application/json'}
+		
+		return json.dumps({'error': 'No valid input.'}), 200, {'ContentType':'application/json'}
 	except(Exception, Error) as error:
 		print("Error while connecting to server.", error)
 		
@@ -78,10 +80,14 @@ def get_query(selection=[]):
 
 @app.route('/selection', methods=['POST'])
 def selection():
+	# Check if input is a list
 	if isinstance(request.get_json()['value'], list):
-		# check if valid numbers
-		subset = get_query(request.get_json()['value'])
-		return subset
+		subset = {}
+		
+		# verify list is not empty
+		if request.get_json()['value']:
+			subset = get_query(request.get_json()['value'])
+			return subset
 	
 	# Return error
 	return json.dumps({'error': 'Invalid input. Please set value to a list of numbers for work IDs.'}), 400, {'ContentType':'application/json'}
